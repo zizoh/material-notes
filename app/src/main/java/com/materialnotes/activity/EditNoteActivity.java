@@ -90,74 +90,6 @@ public class EditNoteActivity extends RoboActionBarActivity {
         }
         noteContentText.setCustomSelectionActionModeCallback(mActionModeCallback);
 
-        // Bible dictionary with OSIS codes
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("Genesis", "GEN");
-        map.put("Exodus", "EXO");
-        map.put("Leviticus", "LEV");
-        map.put("Numbers", "NUM");
-        map.put("Deuteronomy", "DEU");
-        map.put("Joshua", "JOS");
-        map.put("Judges", "JDG");
-        map.put("Ruth", "RUT");
-        map.put("1 Samuel", "1SA");
-        map.put("2 Samuel", "2SA");
-        map.put("1 Kings", "1KI");
-        map.put("2 Kings", "2KI");
-        map.put("1 Chronicles", "1CH");
-        map.put("2 Chronicles", "2CH");
-        map.put("Ezra", "EZR");
-        map.put("Nehemiah", "NEH");
-        map.put("Esther", "EST");
-        map.put("Job", "JOB");
-        map.put("Psalms", "PSA");
-        map.put("Proverbs", "PRO");
-        map.put("Ecclesiastes", "ECC");
-        map.put("Song of Solomon", "SNG");
-        map.put("Isaiah", "ISA");
-        map.put("Jeremiah", "JER");
-        map.put("Lamentations", "LAM");
-        map.put("Ezekiel", "EZK");
-        map.put("Daniel", "DAN");
-        map.put("Hosea", "HOS");
-        map.put("Joel", "JOL");
-        map.put("Amos", "AMO");
-        map.put("Obadiah", "OBA");
-        map.put("Jonah", "JON");
-        map.put("Micah", "MIC");
-        map.put("Nahum", "NAM");
-        map.put("Habakkuk", "HAB");
-        map.put("Zephaniah", "ZEP");
-        map.put("Haggai", "HAG");
-        map.put("Zechariah", "ZEC");
-        map.put("Malachi", "MAL");
-        map.put("Matthew", "MAT");
-        map.put("Mark", "MRK");
-        map.put("Luke", "LUK");
-        map.put("John", "JHN");
-        map.put("Acts", "ACT");
-        map.put("Romans", "ROM");
-        map.put("1 Corinthians", "1CO");
-        map.put("2 Corinthians", "2CO");
-        map.put("Galatians", "GAL");
-        map.put("Ephesians", "EPH");
-        map.put("Philippians", "PHP");
-        map.put("Colossians", "COL");
-        map.put("1 Thessalonians", "1TH");
-        map.put("2 Thessalonians", "2TH");
-        map.put("1 Timothy", "1TI");
-        map.put("2 Timothy", "2TI");
-        map.put("Titus", "TIT");
-        map.put("Philemon", "PHM");
-        map.put("Hebrews", "HEB");
-        map.put("James", "JAS");
-        map.put("1 Peter", "1PE");
-        map.put("2 Peter", "2PE");
-        map.put("1 John", "1JN");
-        map.put("2 John", "2JN");
-        map.put("3 John", "3JN");
-        map.put("Jude", "JUD");
-        map.put("Revelation", "REV");
     }
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
@@ -198,12 +130,103 @@ public class EditNoteActivity extends RoboActionBarActivity {
 
     private void openBible(){
         CharSequence selectedText =  noteContentText.getText().subSequence(noteContentText.getSelectionStart(), noteContentText.getSelectionEnd());
-
+        
         // TODO: parse selectedText to appropriate reference string eg 1 Corinthians 13:4-5 to 1CO.13.4-5
-        selectedText = "https://www.bible.com/en-GB/bible/1/1CO.13.4-5" ;
+        String bookPrefix = "";
+        String bookName = "";
+        String bookVerse = "";
+        String selectectedTextString = selectedText.toString();
 
+        String selectectedTextStringWithoutSpaces = selectectedTextString.toLowerCase().replace(" ", "");
+        if (bookHasPrefix(selectectedTextStringWithoutSpaces)){
+            bookPrefix = getPrefix(selectectedTextStringWithoutSpaces);
+            selectectedTextStringWithoutSpaces = selectectedTextStringWithoutSpaces.substring(1);
+        }
+        bookName = getBookname(selectectedTextStringWithoutSpaces);
+        bookVerse = getVerse(selectectedTextStringWithoutSpaces);
+
+        // Bible dictionary with OSIS codes
+        Map<String, String> bookMap = new HashMap<String, String>();
+        bookMap.put("Genesis", "GEN");
+        bookMap.put("Exodus", "EXO");
+        bookMap.put("Leviticus", "LEV");
+        bookMap.put("Numbers", "NUM");
+        bookMap.put("Deuteronomy", "DEU");
+        bookMap.put("Joshua", "JOS");
+        bookMap.put("Judges", "JDG");
+        bookMap.put("Ruth", "RUT");
+        bookMap.put("1 Samuel", "1SA");
+        bookMap.put("2 Samuel", "2SA");
+        bookMap.put("1 Kings", "1KI");
+        bookMap.put("2 Kings", "2KI");
+        bookMap.put("1 Chronicles", "1CH");
+        bookMap.put("2 Chronicles", "2CH");
+        bookMap.put("Ezra", "EZR");
+        bookMap.put("Nehemiah", "NEH");
+        bookMap.put("Esther", "EST");
+        bookMap.put("Job", "JOB");
+        bookMap.put("Psalms", "PSA");
+        bookMap.put("Proverbs", "PRO");
+        bookMap.put("Ecclesiastes", "ECC");
+        bookMap.put("Song of Solomon", "SNG");
+        bookMap.put("Isaiah", "ISA");
+        bookMap.put("Jeremiah", "JER");
+        bookMap.put("Lamentations", "LAM");
+        bookMap.put("Ezekiel", "EZK");
+        bookMap.put("Daniel", "DAN");
+        bookMap.put("Hosea", "HOS");
+        bookMap.put("Joel", "JOL");
+        bookMap.put("Amos", "AMO");
+        bookMap.put("Obadiah", "OBA");
+        bookMap.put("Jonah", "JON");
+        bookMap.put("Micah", "MIC");
+        bookMap.put("Nahum", "NAM");
+        bookMap.put("Habakkuk", "HAB");
+        bookMap.put("Zephaniah", "ZEP");
+        bookMap.put("Haggai", "HAG");
+        bookMap.put("Zechariah", "ZEC");
+        bookMap.put("Malachi", "MAL");
+        bookMap.put("Matthew", "MAT");
+        bookMap.put("Mark", "MRK");
+        bookMap.put("Luke", "LUK");
+        bookMap.put("John", "JHN");
+        bookMap.put("Acts", "ACT");
+        bookMap.put("Romans", "ROM");
+        bookMap.put("1 Corinthians", "1CO");
+        bookMap.put("2 Corinthians", "2CO");
+        bookMap.put("Galatians", "GAL");
+        bookMap.put("Ephesians", "EPH");
+        bookMap.put("Philippians", "PHP");
+        bookMap.put("Colossians", "COL");
+        bookMap.put("1 Thessalonians", "1TH");
+        bookMap.put("2 Thessalonians", "2TH");
+        bookMap.put("1 Timothy", "1TI");
+        bookMap.put("2 Timothy", "2TI");
+        bookMap.put("Titus", "TIT");
+        bookMap.put("Philemon", "PHM");
+        bookMap.put("Hebrews", "HEB");
+        bookMap.put("James", "JAS");
+        bookMap.put("1 Peter", "1PE");
+        bookMap.put("2 Peter", "2PE");
+        bookMap.put("1 John", "1JN");
+        bookMap.put("2 John", "2JN");
+        bookMap.put("3 John", "3JN");
+        bookMap.put("Jude", "JUD");
+        bookMap.put("Revelation", "REV");
+
+        String bookMapKey = "";
+        if (bookPrefix.isEmpty()){
+            bookMapKey = bookName;
+        } else {
+            bookMapKey = bookPrefix + " " + bookName;
+        }
+        String bookMapValue = "";
+        bookMapValue = bookMap.get(bookMapKey);
+        
         // Build the intent
-        String url = selectedText.toString();
+        // https://www.bible.com/en-GB/bible/1/1CO.13.4-5
+        String url = "https://www.bible.com/en-GB/bible/1/" + bookMapValue + "." + bookVerse;
+
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
 
@@ -216,6 +239,50 @@ public class EditNoteActivity extends RoboActionBarActivity {
         if (isIntentSafe) {
             startActivity(intent);
         }
+    }
+
+    private String getBookname(String givenText) {
+        String bookName;
+        // Remove integers
+        bookName = givenText.replaceAll("\\d", "");
+        // Remove colon
+        bookName = bookName.replaceAll(":", "");
+        // Capitalize first letter of book name
+        bookName = bookName.substring(0, 1).toUpperCase() + bookName.substring(1);
+        if (bookName.contains("Song")){
+            // For when users enter Songs of Solomon, Song of Songs or Songs of Songs
+            bookName = "Song of Solomon";
+        }
+        return bookName;
+    }
+
+    private String getVerse(String givenText) {
+        String verse;
+        verse = givenText.replaceAll("[a-zA-Z]*", "");
+        verse = verse.replaceAll(":", ".");
+        return verse;
+    }
+
+    private String getPrefix(String givenText) {
+        String prefix;
+        prefix = givenText.substring(0, 1);
+        if (givenText.startsWith("i")){
+            prefix = "1";
+        }else if (givenText.startsWith("ii")){
+            prefix = "2";
+        }else if (givenText.startsWith("iii")){
+            prefix = "3";
+        }
+        return prefix;
+    }
+
+    public boolean bookHasPrefix (String book){
+        if (book.startsWith("1") || book.startsWith("2") || book.startsWith("3")
+                || book.startsWith("i") || book.startsWith("ii") || book.startsWith("iii")){
+            if (!book.contains("isaiah")){
+                return true;
+            }
+        } return false;
     }
 
     /** {@inheritDoc} */
