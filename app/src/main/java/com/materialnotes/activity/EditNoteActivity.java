@@ -2,6 +2,9 @@ package com.materialnotes.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -15,6 +18,9 @@ import com.materialnotes.data.Note;
 import com.materialnotes.util.Strings;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.ContentView;
@@ -83,6 +89,75 @@ public class EditNoteActivity extends RoboActionBarActivity {
             note.setCreatedAt(new Date());
         }
         noteContentText.setCustomSelectionActionModeCallback(mActionModeCallback);
+
+        // Bible dictionary with OSIS codes
+        Map<String, String> map = new HashMap<String, String>();
+        map.put("Genesis", "GEN");
+        map.put("Exodus", "EXO");
+        map.put("Leviticus", "LEV");
+        map.put("Numbers", "NUM");
+        map.put("Deuteronomy", "DEU");
+        map.put("Joshua", "JOS");
+        map.put("Judges", "JDG");
+        map.put("Ruth", "RUT");
+        map.put("1 Samuel", "1SA");
+        map.put("2 Samuel", "2SA");
+        map.put("1 Kings", "1KI");
+        map.put("2 Kings", "2KI");
+        map.put("1 Chronicles", "1CH");
+        map.put("2 Chronicles", "2CH");
+        map.put("Ezra", "EZR");
+        map.put("Nehemiah", "NEH");
+        map.put("Esther", "EST");
+        map.put("Job", "JOB");
+        map.put("Psalms", "PSA");
+        map.put("Proverbs", "PRO");
+        map.put("Ecclesiastes", "ECC");
+        map.put("Song of Solomon", "SNG");
+        map.put("Isaiah", "ISA");
+        map.put("Jeremiah", "JER");
+        map.put("Lamentations", "LAM");
+        map.put("Ezekiel", "EZK");
+        map.put("Daniel", "DAN");
+        map.put("Hosea", "HOS");
+        map.put("Joel", "JOL");
+        map.put("Amos", "AMO");
+        map.put("Obadiah", "OBA");
+        map.put("Jonah", "JON");
+        map.put("Micah", "MIC");
+        map.put("Nahum", "NAM");
+        map.put("Habakkuk", "HAB");
+        map.put("Zephaniah", "ZEP");
+        map.put("Haggai", "HAG");
+        map.put("Zechariah", "ZEC");
+        map.put("Malachi", "MAL");
+        map.put("Matthew", "MAT");
+        map.put("Mark", "MRK");
+        map.put("Luke", "LUK");
+        map.put("John", "JHN");
+        map.put("Acts", "ACT");
+        map.put("Romans", "ROM");
+        map.put("1 Corinthians", "1CO");
+        map.put("2 Corinthians", "2CO");
+        map.put("Galatians", "GAL");
+        map.put("Ephesians", "EPH");
+        map.put("Philippians", "PHP");
+        map.put("Colossians", "COL");
+        map.put("1 Thessalonians", "1TH");
+        map.put("2 Thessalonians", "2TH");
+        map.put("1 Timothy", "1TI");
+        map.put("2 Timothy", "2TI");
+        map.put("Titus", "TIT");
+        map.put("Philemon", "PHM");
+        map.put("Hebrews", "HEB");
+        map.put("James", "JAS");
+        map.put("1 Peter", "1PE");
+        map.put("2 Peter", "2PE");
+        map.put("1 John", "1JN");
+        map.put("2 John", "2JN");
+        map.put("3 John", "3JN");
+        map.put("Jude", "JUD");
+        map.put("Revelation", "REV");
     }
 
     private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
@@ -107,6 +182,7 @@ public class EditNoteActivity extends RoboActionBarActivity {
         public boolean onActionItemClicked(ActionMode actionMode, MenuItem item) {
             switch (item.getItemId()) {
                 case R.id.menu_bible:
+                    openBible();
                     actionMode.finish();
                     return true;
                 default:
@@ -119,6 +195,28 @@ public class EditNoteActivity extends RoboActionBarActivity {
         public void onDestroyActionMode(ActionMode actionMode) {
         }
     };
+
+    private void openBible(){
+        CharSequence selectedText =  noteContentText.getText().subSequence(noteContentText.getSelectionStart(), noteContentText.getSelectionEnd());
+
+        // TODO: parse selectedText to appropriate reference string eg 1 Corinthians 13:4-5 to 1CO.13.4-5
+        selectedText = "https://www.bible.com/en-GB/bible/1/1CO.13.4-5" ;
+
+        // Build the intent
+        String url = selectedText.toString();
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+
+        // Verify there's at least one app installed that can handle the intent
+        PackageManager packageManager = getPackageManager();
+        List<ResolveInfo> activities = packageManager.queryIntentActivities(intent, 0);
+        boolean isIntentSafe = activities.size() > 0;
+
+        // Start an activity if it's safe
+        if (isIntentSafe) {
+            startActivity(intent);
+        }
+    }
 
     /** {@inheritDoc} */
     @Override
