@@ -3,7 +3,9 @@ package com.materialnotes.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.ActionMode;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -80,7 +82,43 @@ public class EditNoteActivity extends RoboActionBarActivity {
             note = new Note();
             note.setCreatedAt(new Date());
         }
+        noteContentText.setCustomSelectionActionModeCallback(mActionModeCallback);
     }
+
+    private ActionMode.Callback mActionModeCallback = new ActionMode.Callback() {
+        // Called when the action mode is created; startActionMode() was called
+        @Override
+        public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
+            // Inflate a menu resource providing context menu items
+            MenuInflater inflater = actionMode.getMenuInflater();
+            inflater.inflate(R.menu.edit_note_context_menu, menu);
+            return true;
+        }
+
+        // Called each time the action mode is shown. Always called after onCreateActionMode, but
+        // may be called multiple times if the mode is invalidated.
+        @Override
+        public boolean onPrepareActionMode(ActionMode actionMode, Menu menu) {
+            return false; // Return false if nothing is done
+        }
+
+        // Called when the user selects a contextual menu item
+        @Override
+        public boolean onActionItemClicked(ActionMode actionMode, MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.menu_bible:
+                    actionMode.finish();
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        // Called when the user exits the action mode
+        @Override
+        public void onDestroyActionMode(ActionMode actionMode) {
+        }
+    };
 
     /** {@inheritDoc} */
     @Override
