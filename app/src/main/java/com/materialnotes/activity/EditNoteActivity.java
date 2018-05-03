@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.ContentView;
@@ -146,6 +147,8 @@ public class EditNoteActivity extends RoboActionBarActivity {
         if (bookHasPrefix(selectectedTextStringWithoutSpaces)) {
             bookPrefix = getPrefix(selectectedTextStringWithoutSpaces);
             selectectedTextStringWithoutPrefix = removePrefix(selectectedTextStringWithoutSpaces);
+        } else {
+            selectectedTextStringWithoutPrefix = selectectedTextStringWithoutSpaces;
         }
         String bookName = "";
         bookName = getBookname(selectectedTextStringWithoutPrefix);
@@ -227,6 +230,7 @@ public class EditNoteActivity extends RoboActionBarActivity {
             bookMapKey = bookPrefix + " " + bookName;
         }
         String bookMapValue = "";
+
         bookMapValue = bookMap.get(bookMapKey);
 
         // Build the intent
