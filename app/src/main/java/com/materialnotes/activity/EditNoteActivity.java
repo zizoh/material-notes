@@ -134,7 +134,7 @@ public class EditNoteActivity extends RoboActionBarActivity {
     };
 
     private void openBible() {
-        CharSequence selectedText = noteContentText.getText().subSequence(noteContentText.getSelectionStart(), noteContentText.getSelectionEnd());
+        CharSequence selectedText = getUserSelectedText();
 
         // TODO: parse selectedText to appropriate reference string eg 1 Corinthians 13:4-5 to 1CO.13.4-5
         String bookPrefix = "";
@@ -246,6 +246,10 @@ public class EditNoteActivity extends RoboActionBarActivity {
         if (isIntentSafe) {
             startActivity(intent);
         }
+    }
+
+    private CharSequence getUserSelectedText() {
+        return noteContentText.getText().subSequence(noteContentText.getSelectionStart(), noteContentText.getSelectionEnd());
     }
 
     @NonNull
