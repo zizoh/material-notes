@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.view.ActionMode;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -36,8 +37,10 @@ public class EditNoteActivity extends RoboActionBarActivity {
 
     private static final String EXTRA_NOTE = "EXTRA_NOTE";
 
-    @InjectView(R.id.note_title)   private EditText noteTitleText;
-    @InjectView(R.id.note_content) private EditText noteContentText;
+    @InjectView(R.id.note_title)
+    private EditText noteTitleText;
+    @InjectView(R.id.note_content)
+    private EditText noteContentText;
 
     private Note note;
 
@@ -45,7 +48,7 @@ public class EditNoteActivity extends RoboActionBarActivity {
      * Construye el Intent para llamar a esta actividad con una nota ya existente.
      *
      * @param context el contexto que la llama.
-     * @param note la nota a editar.
+     * @param note    la nota a editar.
      * @return un Intent.
      */
     public static Intent buildIntent(Context context, Note note) {
@@ -74,11 +77,13 @@ public class EditNoteActivity extends RoboActionBarActivity {
         return (Note) intent.getExtras().get(EXTRA_NOTE);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-		// Inicializa los componentes //////////////////////////////////////////////////////////////
+        // Inicializa los componentes //////////////////////////////////////////////////////////////
         getSupportActionBar().setDisplayHomeAsUpEnabled(true); // Muestra la flecha hacia atrás
         note = (Note) getIntent().getSerializableExtra(EXTRA_NOTE); // Recuperar la nota del Intent
         if (note != null) { // Editar nota existente
@@ -128,22 +133,23 @@ public class EditNoteActivity extends RoboActionBarActivity {
         }
     };
 
-    private void openBible(){
-        CharSequence selectedText =  noteContentText.getText().subSequence(noteContentText.getSelectionStart(), noteContentText.getSelectionEnd());
-        
+    private void openBible() {
+        CharSequence selectedText = noteContentText.getText().subSequence(noteContentText.getSelectionStart(), noteContentText.getSelectionEnd());
+
         // TODO: parse selectedText to appropriate reference string eg 1 Corinthians 13:4-5 to 1CO.13.4-5
         String bookPrefix = "";
-        String bookName = "";
         String bookVerse = "";
         String selectectedTextString = selectedText.toString();
 
         String selectectedTextStringWithoutSpaces = selectectedTextString.toLowerCase().replace(" ", "");
-        if (bookHasPrefix(selectectedTextStringWithoutSpaces)){
+        String selectectedTextStringWithoutPrefix = "";
+        if (bookHasPrefix(selectectedTextStringWithoutSpaces)) {
             bookPrefix = getPrefix(selectectedTextStringWithoutSpaces);
-            selectectedTextStringWithoutSpaces = selectectedTextStringWithoutSpaces.substring(1);
+            selectectedTextStringWithoutPrefix = removePrefix(selectectedTextStringWithoutSpaces);
         }
-        bookName = getBookname(selectectedTextStringWithoutSpaces);
-        bookVerse = getVerse(selectectedTextStringWithoutSpaces);
+        String bookName = "";
+        bookName = getBookname(selectectedTextStringWithoutPrefix);
+        bookVerse = getVerse(selectectedTextStringWithoutPrefix);
 
         // Bible dictionary with OSIS codes
         Map<String, String> bookMap = new HashMap<String, String>();
@@ -215,17 +221,18 @@ public class EditNoteActivity extends RoboActionBarActivity {
         bookMap.put("Revelation", "REV");
 
         String bookMapKey = "";
-        if (bookPrefix.isEmpty()){
+        if (bookPrefix.isEmpty()) {
             bookMapKey = bookName;
         } else {
             bookMapKey = bookPrefix + " " + bookName;
         }
         String bookMapValue = "";
         bookMapValue = bookMap.get(bookMapKey);
-        
+
         // Build the intent
         // https://www.bible.com/en-GB/bible/1/1CO.13.4-5
         String url = "https://www.bible.com/en-GB/bible/1/" + bookMapValue + "." + bookVerse;
+        //String url = "youversion://bible?reference=" + bookMapValue + "." + bookVerse;
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
         intent.setData(Uri.parse(url));
@@ -241,6 +248,17 @@ public class EditNoteActivity extends RoboActionBarActivity {
         }
     }
 
+    @NonNull
+    private String removePrefix(String selectectedTextStringWithoutPrefix) {
+        selectectedTextStringWithoutPrefix = selectectedTextStringWithoutPrefix.substring(1);
+        if (selectectedTextStringWithoutPrefix.substring(0, 2).equals("ii")) {
+            selectectedTextStringWithoutPrefix = selectectedTextStringWithoutPrefix.substring(2);
+        } else if (selectectedTextStringWithoutPrefix.substring(0, 1).equals("i")) {
+            selectectedTextStringWithoutPrefix = selectectedTextStringWithoutPrefix.substring(1);
+        }
+        return selectectedTextStringWithoutPrefix;
+    }
+
     private String getBookname(String givenText) {
         String bookName;
         // Remove integers
@@ -249,7 +267,7 @@ public class EditNoteActivity extends RoboActionBarActivity {
         bookName = bookName.replaceAll(":", "");
         // Capitalize first letter of book name
         bookName = bookName.substring(0, 1).toUpperCase() + bookName.substring(1);
-        if (bookName.contains("Song")){
+        if (bookName.contains("Song")) {
             // For when users enter Songs of Solomon, Song of Songs or Songs of Songs
             bookName = "Song of Solomon";
         }
@@ -266,33 +284,41 @@ public class EditNoteActivity extends RoboActionBarActivity {
     private String getPrefix(String givenText) {
         String prefix;
         prefix = givenText.substring(0, 1);
-        if (givenText.startsWith("i")){
-            prefix = "1";
-        }else if (givenText.startsWith("ii")){
-            prefix = "2";
-        }else if (givenText.startsWith("iii")){
+        if (givenText.substring(0, 3).equals("iii")) {
             prefix = "3";
+            return prefix;
+        } else if (givenText.substring(0, 2).equals("ii")) {
+            prefix = "2";
+            return prefix;
+        } else if (givenText.substring(0, 1).equals("i")) {
+            prefix = "1";
+            return prefix;
         }
         return prefix;
     }
 
-    public boolean bookHasPrefix (String book){
+    public boolean bookHasPrefix(String book) {
         if (book.startsWith("1") || book.startsWith("2") || book.startsWith("3")
-                || book.startsWith("i") || book.startsWith("ii") || book.startsWith("iii")){
-            if (!book.contains("isaiah")){
+                || book.startsWith("i") || book.startsWith("ii") || book.startsWith("iii")) {
+            if (!book.contains("isaiah")) {
                 return true;
             }
-        } return false;
+        }
+        return false;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.edit_note, menu);
         return true;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -305,11 +331,14 @@ public class EditNoteActivity extends RoboActionBarActivity {
                     finish();
                 } else validateNoteForm();
                 return true;
-            default: return super.onOptionsItemSelected(item);
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
-    /** @return {@code true} si tiene titulo y contenido; {@code false} en cualquier otro caso. */
+    /**
+     * @return {@code true} si tiene titulo y contenido; {@code false} en cualquier otro caso.
+     */
     private boolean isNoteFormOk() {
         return !Strings.isNullOrBlank(noteTitleText.getText().toString()) && !Strings.isNullOrBlank(noteContentText.getText().toString());
     }
@@ -327,14 +356,17 @@ public class EditNoteActivity extends RoboActionBarActivity {
         setResult(RESULT_OK, resultIntent);
     }
 
-    /** Muestra mensajes de validación de la forma de la nota. */
+    /**
+     * Muestra mensajes de validación de la forma de la nota.
+     */
     private void validateNoteForm() {
         StringBuilder message = null;
         if (Strings.isNullOrBlank(noteTitleText.getText().toString())) {
             message = new StringBuilder().append(getString(R.string.title_required));
         }
         if (Strings.isNullOrBlank(noteContentText.getText().toString())) {
-            if (message == null) message = new StringBuilder().append(getString(R.string.content_required));
+            if (message == null)
+                message = new StringBuilder().append(getString(R.string.content_required));
             else message.append("\n").append(getString(R.string.content_required));
         }
         if (message != null) {
@@ -345,7 +377,9 @@ public class EditNoteActivity extends RoboActionBarActivity {
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onBackPressed() {
         // No se edito ningúna nota ni creo alguna nota
