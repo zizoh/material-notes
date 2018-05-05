@@ -22,7 +22,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import roboguice.activity.RoboActionBarActivity;
 import roboguice.inject.ContentView;
@@ -136,14 +135,11 @@ public class EditNoteActivity extends RoboActionBarActivity {
 
     private void openBible() {
         CharSequence selectedText = getUserSelectedText();
-
-        // TODO: parse selectedText to appropriate reference string eg 1 Corinthians 13:4-5 to 1CO.13.4-5
-        String bookPrefix = "";
-        String bookVerse = "";
         String selectectedTextString = selectedText.toString();
-
         String selectectedTextStringWithoutSpaces = selectectedTextString.toLowerCase().replace(" ", "");
+
         String selectectedTextStringWithoutPrefix = "";
+        String bookPrefix = "";
         if (bookHasPrefix(selectectedTextStringWithoutSpaces)) {
             bookPrefix = getPrefix(selectectedTextStringWithoutSpaces);
             selectectedTextStringWithoutPrefix = removePrefix(selectectedTextStringWithoutSpaces);
@@ -152,6 +148,7 @@ public class EditNoteActivity extends RoboActionBarActivity {
         }
         String bookName = "";
         bookName = getBookname(selectectedTextStringWithoutPrefix);
+        String bookVerse = "";
         bookVerse = getVerse(selectectedTextStringWithoutPrefix);
 
         // Bible dictionary with OSIS codes
@@ -230,7 +227,6 @@ public class EditNoteActivity extends RoboActionBarActivity {
             bookMapKey = bookPrefix + " " + bookName;
         }
         String bookMapValue = "";
-
         bookMapValue = bookMap.get(bookMapKey);
 
         // Build the intent
@@ -291,7 +287,6 @@ public class EditNoteActivity extends RoboActionBarActivity {
 
     private String getPrefix(String givenText) {
         String prefix;
-        prefix = givenText.substring(0, 1);
         if (givenText.substring(0, 3).equals("iii")) {
             prefix = "3";
             return prefix;
@@ -302,6 +297,8 @@ public class EditNoteActivity extends RoboActionBarActivity {
             prefix = "1";
             return prefix;
         }
+        // The prefix is either 1, 2 or 3
+        prefix = givenText.substring(0, 1);
         return prefix;
     }
 
