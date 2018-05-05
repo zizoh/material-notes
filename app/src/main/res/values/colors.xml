@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="selected_note">#99d6eb</color>
+    <color name="color_primary">#08617c</color>
+
 </resources>
