@@ -15,11 +15,11 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.materialnotes.R;
+import com.materialnotes.data.BooksOfBibleCodes;
 import com.materialnotes.data.Note;
 import com.materialnotes.util.Strings;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -151,87 +151,19 @@ public class EditNoteActivity extends RoboActionBarActivity {
         String bookVerse = "";
         bookVerse = getVerse(selectectedTextStringWithoutPrefix);
 
-        // Bible dictionary with OSIS codes
-        Map<String, String> bookMap = new HashMap<String, String>();
-        bookMap.put("Genesis", "GEN");
-        bookMap.put("Exodus", "EXO");
-        bookMap.put("Leviticus", "LEV");
-        bookMap.put("Numbers", "NUM");
-        bookMap.put("Deuteronomy", "DEU");
-        bookMap.put("Joshua", "JOS");
-        bookMap.put("Judges", "JDG");
-        bookMap.put("Ruth", "RUT");
-        bookMap.put("1 Samuel", "1SA");
-        bookMap.put("2 Samuel", "2SA");
-        bookMap.put("1 Kings", "1KI");
-        bookMap.put("2 Kings", "2KI");
-        bookMap.put("1 Chronicles", "1CH");
-        bookMap.put("2 Chronicles", "2CH");
-        bookMap.put("Ezra", "EZR");
-        bookMap.put("Nehemiah", "NEH");
-        bookMap.put("Esther", "EST");
-        bookMap.put("Job", "JOB");
-        bookMap.put("Psalms", "PSA");
-        bookMap.put("Proverbs", "PRO");
-        bookMap.put("Ecclesiastes", "ECC");
-        bookMap.put("Song of Solomon", "SNG");
-        bookMap.put("Isaiah", "ISA");
-        bookMap.put("Jeremiah", "JER");
-        bookMap.put("Lamentations", "LAM");
-        bookMap.put("Ezekiel", "EZK");
-        bookMap.put("Daniel", "DAN");
-        bookMap.put("Hosea", "HOS");
-        bookMap.put("Joel", "JOL");
-        bookMap.put("Amos", "AMO");
-        bookMap.put("Obadiah", "OBA");
-        bookMap.put("Jonah", "JON");
-        bookMap.put("Micah", "MIC");
-        bookMap.put("Nahum", "NAM");
-        bookMap.put("Habakkuk", "HAB");
-        bookMap.put("Zephaniah", "ZEP");
-        bookMap.put("Haggai", "HAG");
-        bookMap.put("Zechariah", "ZEC");
-        bookMap.put("Malachi", "MAL");
-        bookMap.put("Matthew", "MAT");
-        bookMap.put("Mark", "MRK");
-        bookMap.put("Luke", "LUK");
-        bookMap.put("John", "JHN");
-        bookMap.put("Acts", "ACT");
-        bookMap.put("Romans", "ROM");
-        bookMap.put("1 Corinthians", "1CO");
-        bookMap.put("2 Corinthians", "2CO");
-        bookMap.put("Galatians", "GAL");
-        bookMap.put("Ephesians", "EPH");
-        bookMap.put("Philippians", "PHP");
-        bookMap.put("Colossians", "COL");
-        bookMap.put("1 Thessalonians", "1TH");
-        bookMap.put("2 Thessalonians", "2TH");
-        bookMap.put("1 Timothy", "1TI");
-        bookMap.put("2 Timothy", "2TI");
-        bookMap.put("Titus", "TIT");
-        bookMap.put("Philemon", "PHM");
-        bookMap.put("Hebrews", "HEB");
-        bookMap.put("James", "JAS");
-        bookMap.put("1 Peter", "1PE");
-        bookMap.put("2 Peter", "2PE");
-        bookMap.put("1 John", "1JN");
-        bookMap.put("2 John", "2JN");
-        bookMap.put("3 John", "3JN");
-        bookMap.put("Jude", "JUD");
-        bookMap.put("Revelation", "REV");
-
         String bookMapKey = "";
         if (bookPrefix.isEmpty()) {
             bookMapKey = bookName;
         } else {
             bookMapKey = bookPrefix + " " + bookName;
         }
-        String bookMapValue = "";
-        bookMapValue = bookMap.get(bookMapKey);
+        Map<String, String> booksOfBibleCodesMap = BooksOfBibleCodes.getBookOfBibleCodes();
+        String booksOfBibleCodesMapValue = "";
+        booksOfBibleCodesMapValue = booksOfBibleCodesMap.get(bookMapKey);
 
         // Build the intent
-        // https://www.bible.com/en-GB/bible/1/1CO.13.4-5
-        String url = "https://www.bible.com/en-GB/bible/1/" + bookMapValue + "." + bookVerse;
+        // URL Format --> https://www.bible.com/en-GB/bible/1/1CO.13.4-5
+        String url = "https://www.bible.com/en-GB/bible/1/" + booksOfBibleCodesMapValue + "." + bookVerse;
         //String url = "youversion://bible?reference=" + bookMapValue + "." + bookVerse;
 
         Intent intent = new Intent(Intent.ACTION_VIEW);
