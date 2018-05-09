@@ -6,6 +6,6 @@
         android:id="@+id/menu_bible"
         android:title="Open Bible"
         app:showAsAction="ifRoom"
-        android:orderInCategory="7"/>
+        android:orderInCategory="8"/>
 
 </menu>
